@@ -13,10 +13,11 @@ php已安装启用以下扩展：
 - swoole    
 
 # 使用说明
-下载或git clone 所有代码到某目录，比如：phpdocker    
+需要在本地workspace下创建两个目录：phplog和ngx。phplog存放php错误日志，ngx存放tengine网站配置文件。
+下载或git clone 所有代码到本地某目录，比如：phpdocker    
 
 1. 执行docker命令创建镜像：   
-docker build -t frostsky/tengine-php7 ./phpdocker     
+docker build -t frostsky/tengine-php7 /path/to/phpdocker     
 
 2. 生成容器并允许：     
 docker run -itd -p 80:80 -p 8888:22 -p 443:443 -v /workspace:/data/www --name tengine frostsky/tengine-php7
