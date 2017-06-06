@@ -37,7 +37,7 @@ RUN set -x && \
     mkdir -p /data/www && \
     useradd -r -s /sbin/nologin -d /data/www -m -k no www && \
 
-#Download tengine and php and redis and phpredis
+#Download tengine & php & redis & phpredis
     cd /usr/local/src/ && \
     curl -Lk http://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.gz | gunzip | tar x -C /usr/local/src && \
     curl -Lk http://php.net/distributions/php-$PHP_VERSION.tar.gz | gunzip | tar x -C /usr/local/src && \
@@ -105,7 +105,6 @@ RUN set -x && \
     --without-pear && \
     make && make install && \
 
-
 #Install php-fpm
     cd /usr/local/src/php-$PHP_VERSION && \
     cp php.ini-production /usr/local/php/etc/php.ini && \
@@ -113,38 +112,38 @@ RUN set -x && \
     cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf && \
     cp -R ./sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm && chmod +x /etc/init.d/php-fpm && \
 
-#Install Redis server
-    cd /usr/local/src/redis-$REDIS_VERSION \
-    && make && make install PREFIX=/usr/local/redis \
-    && cp redis.conf /usr/local/redis/ \
-    && sed 's/^daemonize no/daemonize yes/' -i /usr/local/redis/redis.conf \
-    && sed 's/^bind 127.0.0.1/bind 0.0.0.0/' -i /usr/local/redis/redis.conf \
-
 #Config php.ini
-    sed -i 's#; extension_dir = \"\.\/\"#extension_dir = "/usr/local/php/lib/php/extensions/no-debug-non-zts-20160303/"#' /usr/local/php/etc/php.ini \
+    sed -i 's#; extension_dir = \"\.\/\"#extension_dir = "/usr/local/php/lib/php/extensions/no-debug-non-zts-20160303"#' /usr/local/php/etc/php.ini \
     && sed -i 's/post_max_size = 8M/post_max_size = 64M/g' /usr/local/php/etc/php.ini \
     && sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 64M/g' /usr/local/php/etc/php.ini \
     && sed -i 's/;date.timezone =/date.timezone = PRC/g' /usr/local/php/etc/php.ini \
-    && sed -i 's/;error_log = syslog/error_log = /data/www/phplog/php_error.log/g' /usr/local/php/etc/php.ini \
+    && sed -i 's#;error_log = syslog#error_log = /data/www/phplog/php_error.log#' /usr/local/php/etc/php.ini \
     && sed -i 's/max_execution_time = 30/max_execution_time = 120/g' /usr/local/php/etc/php.ini \
     && sed -i 's/\[opcache\]/[opcache]\nzend_extension=opcache.so/g' /usr/local/php/etc/php.ini \
     && sed -i 's/;opcache.enable=0/opcache.enable=1/g' /usr/local/php/etc/php.ini \
     && sed -i 's/;opcache.enable_cli=0/opcache.enable_cli=1/g' /usr/local/php/etc/php.ini \
-    && sed -i 's/;opcache.fast_shutdown=0/opcache.fast_shutdown=1/g' /usr/local/php/etc/php.ini \    
+    && sed -i 's/;opcache.fast_shutdown=0/opcache.fast_shutdown=1/g' /usr/local/php/etc/php.ini && \  
 
 #Install PHPRedis
     cd /usr/local/src/redis-3.1.2 \
     && /usr/local/php/bin/phpize \
     && ./configure --with-php-config=/usr/local/php/bin/php-config \
     && make && make install \
-    && sed -i 's/; Windows Extensions/extension=redis.so\n; Windows Extensions/g' /usr/local/php/etc/php.ini \
+    && sed -i 's/; Windows Extensions/extension=redis.so\n; Windows Extensions/g' /usr/local/php/etc/php.ini && \
 
 #Install swoole    
     curl -Lk https://codeload.github.com/swoole/swoole-src/tar.gz/v1.9.12 | gunzip | tar x -C /usr/local/src \
-    && cd swoole-src-1.9.12 \
+    && cd /usr/local/src/swoole-src-1.9.12 \
     && /usr/local/php/bin/phpize \
     && ./configure --with-php-config=/usr/local/php/bin/php-config && make && make install \
-    && sed -i 's/extension=redis.so/extension=redis.so\nextension=swoole.so/g' /usr/local/php/etc/php.ini \
+    && sed -i 's/extension=redis.so/extension=redis.so\nextension=swoole.so/g' /usr/local/php/etc/php.ini && \
+
+#Install Redis server
+    cd /usr/local/src/redis-$REDIS_VERSION \
+    && make && make install PREFIX=/usr/local/redis \
+    && cp redis.conf /usr/local/redis/ \
+    && sed 's/^daemonize no/daemonize yes/' -i /usr/local/redis/redis.conf \
+    && sed 's/^bind 127.0.0.1/bind 0.0.0.0/' -i /usr/local/redis/redis.conf && \  
 
 #Clean OS
     yum remove -y gcc \
@@ -176,7 +175,7 @@ ADD start.sh /start.sh
 RUN chmod +x /start.sh
 
 #Set port
-EXPOSE 22 80 443
+EXPOSE 22 80 443 6379
 
 #Start it
 #ENTRYPOINT ["/start.sh"]
