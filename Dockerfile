@@ -30,15 +30,14 @@ RUN set -x && \
     libpng-devel \
     libjpeg-devel \
     freetype-devel \
-    libmcrypt-devel \
-    openssh-server \
+    libmcrypt-devel \    
     python-setuptools && \
 
 #Add user
     mkdir -p /data/www && \
     useradd -r -s /sbin/nologin -d /data/www -m -k no www && \
 
-#Download tengine & php & redis & phpredis
+#Download tengine and php and redis and phpredis
     cd /usr/local/src/ && \
     curl -Lk http://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.gz | gunzip | tar x -C /usr/local/src && \
     curl -Lk http://php.net/distributions/php-$PHP_VERSION.tar.gz | gunzip | tar x -C /usr/local/src && \
