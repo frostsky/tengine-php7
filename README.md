@@ -1,5 +1,5 @@
 # tengine-php7
-包括tengine和php7的docker镜像
+包含tengine + php7 + redis + phpredis + swoole 的docker镜像 
 
 ## 包括以下组件   
 tengine 2.2.0   
