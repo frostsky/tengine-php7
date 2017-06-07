@@ -5,6 +5,7 @@ MAINTAINER Frostsky <dongshimin@frostsky.com>
 ENV TENGINE_VERSION 2.2.0
 ENV PHP_VERSION 7.1.5
 ENV REDIS_VERSION 3.2.9
+ENV SWOOLE_VERSION 1.9.12
 
 RUN set -x && \
     yum install -y gcc \    
@@ -44,15 +45,13 @@ RUN set -x && \
     curl -Lk http://download.redis.io/releases/redis-$REDIS_VERSION.tar.gz | gunzip | tar x -C /usr/local/src && \
     curl -Lk https://pecl.php.net/get/redis-3.1.2.tgz | gunzip | tar x -C /usr/local/src && \
 
-#Make install tengine
+#Install tengine
     cd /usr/local/src/tengine-$TENGINE_VERSION && \
     ./configure --prefix=/usr/local/nginx \
-    --user=www --group=www \
-    --error-log-path=/var/log/nginx_error.log \
-    --http-log-path=/var/log/nginx_access.log \
-    --pid-path=/var/run/nginx.pid \
+    --user=www --group=www \     
     --with-pcre \
     --with-http_ssl_module \
+    --with-http_realip_module \
     --without-mail_pop3_module \
     --without-mail_imap_module \
     --with-http_gzip_static_module && \
@@ -117,7 +116,7 @@ RUN set -x && \
     && sed -i 's/post_max_size = 8M/post_max_size = 64M/g' /usr/local/php/etc/php.ini \
     && sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 64M/g' /usr/local/php/etc/php.ini \
     && sed -i 's/;date.timezone =/date.timezone = PRC/g' /usr/local/php/etc/php.ini \
-    && sed -i 's#;error_log = syslog#error_log = /data/www/phplog/php_error.log#' /usr/local/php/etc/php.ini \
+    && sed -i 's#;error_log = syslog#error_log = /data/www/devlog/php_error.log#' /usr/local/php/etc/php.ini \
     && sed -i 's/max_execution_time = 30/max_execution_time = 120/g' /usr/local/php/etc/php.ini \
     && sed -i 's/\[opcache\]/[opcache]\nzend_extension=opcache.so/g' /usr/local/php/etc/php.ini \
     && sed -i 's/;opcache.enable=0/opcache.enable=1/g' /usr/local/php/etc/php.ini \
@@ -132,8 +131,8 @@ RUN set -x && \
     && sed -i 's/; Windows Extensions/extension=redis.so\n; Windows Extensions/g' /usr/local/php/etc/php.ini && \
 
 #Install swoole    
-    curl -Lk https://codeload.github.com/swoole/swoole-src/tar.gz/v1.9.12 | gunzip | tar x -C /usr/local/src \
-    && cd /usr/local/src/swoole-src-1.9.12 \
+    curl -Lk https://codeload.github.com/swoole/swoole-src/tar.gz/v$SWOOLE_VERSION | gunzip | tar x -C /usr/local/src \
+    && cd /usr/local/src/swoole-src-$SWOOLE_VERSION \
     && /usr/local/php/bin/phpize \
     && ./configure --with-php-config=/usr/local/php/bin/php-config && make && make install \
     && sed -i 's/extension=redis.so/extension=redis.so\nextension=swoole.so/g' /usr/local/php/etc/php.ini && \
@@ -172,7 +171,7 @@ ADD nginx.conf /usr/local/nginx/conf/
 
 #Start
 ADD start.sh /start.sh
-RUN chmod +x /start.sh
+RUN chmod 755 /start.sh
 
 #Set port
 EXPOSE 22 80 443 6379
