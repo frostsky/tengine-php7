@@ -119,8 +119,8 @@ RUN set -x && \
     && sed -i 's#;error_log = syslog#error_log = /data/www/devlog/php_error.log#' /usr/local/php/etc/php.ini \
     && sed -i 's/max_execution_time = 30/max_execution_time = 120/g' /usr/local/php/etc/php.ini \
     && sed -i 's/\[opcache\]/[opcache]\nzend_extension=opcache.so/g' /usr/local/php/etc/php.ini \
-    && sed -i 's/;opcache.enable=0/opcache.enable=1/g' /usr/local/php/etc/php.ini \
-    && sed -i 's/;opcache.enable_cli=0/opcache.enable_cli=1/g' /usr/local/php/etc/php.ini \
+    && sed -i 's/;opcache.enable=1/opcache.enable=1/g' /usr/local/php/etc/php.ini \
+    && sed -i 's/;opcache.enable_cli=1/opcache.enable_cli=1/g' /usr/local/php/etc/php.ini \
     && sed -i 's/;opcache.fast_shutdown=0/opcache.fast_shutdown=1/g' /usr/local/php/etc/php.ini && \  
 
 #Install PHPRedis
