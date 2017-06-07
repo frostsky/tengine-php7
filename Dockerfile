@@ -1,4 +1,4 @@
-FROM frostsky/centos-sshd
+FROM frostsky/centos-sshd:7.3
 
 MAINTAINER Frostsky <dongshimin@frostsky.com>
 
