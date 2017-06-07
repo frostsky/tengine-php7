@@ -4,7 +4,7 @@
 # 包括以下组件   
 - tengine-2.2.0   
 - php-7.1.5    
-- redis-.2.9   
+- redis-3.2.9   
 
 php已安装启用以下扩展：    
 - opcache    
@@ -20,4 +20,7 @@ php已安装启用以下扩展：
 docker build -t frostsky/tengine-php7 /path/to/phpdocker     
 
 生成容器并运行：     
-docker run -itd -p 80:80 -p 8888:22 -p 443:443 -v /workspace:/data/www --name tengine frostsky/tengine-php7
+docker run -itd -p 80:80 -p 8888:22 -p 443:443 -p 6379:6379 -v /workspace:/data/www --name tengine frostsky/tengine-php7
+
+# 注意
+本镜像继承自 centos-sshd 镜像，故首先要在本地生成 centos-sshd 镜像。请访问 [centos-sshd](https://github.com/frostsky/centos-sshd)
